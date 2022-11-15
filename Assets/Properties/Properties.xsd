@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="Properties">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" name="Property">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Name" type="xs:string"  maxOccurs="1"/>
+              <xs:element name="MinValue" type="xs:unsignedByte" maxOccurs="1"/>
+              <xs:element name="MaxValue" type="xs:unsignedByte" maxOccurs="1"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

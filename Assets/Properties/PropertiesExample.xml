@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Properties>
+  <Property>
+    <Name>Length</Name>
+    <MinValue>1</MinValue>
+    <MaxValue>100</MaxValue>
+  </Property>
+  <Property>
+    <Name>Sharpness</Name>
+    <MinValue>1</MinValue>
+    <MaxValue>100</MaxValue>
+  </Property>
+</Properties>
