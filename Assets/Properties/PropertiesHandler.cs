@@ -12,8 +12,7 @@ public class PropertiesHandler : MonoBehaviour
     /// </summary>
     public TextAsset PropertiesXmlFile = null;
 
-    // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         // Only validate while inside of editor
         if ( ( PropertiesXmlFile != null ) && ( Application.isEditor == true ) )
@@ -24,5 +23,21 @@ public class PropertiesHandler : MonoBehaviour
 
             xmlValidator.Validate( doc );
         }
+    }
+
+    /// <summary>
+    /// Returns the properties xml file as an XDocument
+    /// </summary>
+    /// <returns>The XDocument for the properties, otherwise null</returns>
+    public XDocument GetXmlFile()
+    {
+        XDocument doc = null;
+
+        if ( PropertiesXmlFile != null )
+        {
+            doc = XDocument.Parse( PropertiesXmlFile.text );
+        }
+
+        return doc;
     }
 }
