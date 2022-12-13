@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 
 /// <summary>
 /// Class that handles the properties of an object
@@ -71,6 +72,51 @@ public class ObjectProperties : MonoBehaviour
     }
 
     /// <summary>
+    /// Behaviour which can be added to the inspector which will be invoked before another object's properties are combined into this one
+    /// </summary>
+    [Header( "Behaviour to be invoked before another object's\nproperties are combined into this one" )]
+    public UnityEvent BeforeCombinationBehaviour;
+
+    /// <summary>
+    /// Behaviour which can be added to the inspector which will be invoked after another object's properties are combined into this one
+    /// </summary>
+    [Header("Behaviour to be invoked after another object's\nproperties are combined into this one")]
+    public UnityEvent AfterCombinationBehaviour;
+
+    /// <summary>
+    /// Combine a list of properties into this object's list of properties
+    /// </summary>
+    /// <param name="newProperties">Properties to be combined in</param>
+    public void CombinePropertiesIn( List<Property> newProperties )
+    {
+        // Invoke any custom behaviour that is wanted
+        BeforeCombinationBehaviour.Invoke();
+
+        foreach ( Property p in newProperties )
+        {
+            // If property is not already in the properties list, add it
+            if ( properties.Any( prop => prop.Name == p.Name ) == false )
+            {
+                properties.Add( p );
+            }
+            // If it is already in the list, if the one currently in the list has a lower value, remove it and add the new one instead
+            else
+            {
+                Property sameProp = properties.Where( prop => prop.Name == p.Name ).FirstOrDefault();
+
+                if ( sameProp.ActualValue < p.ActualValue )
+                {
+                    properties.Remove( sameProp );
+                    properties.Add( p );
+                }
+            }
+        }
+
+        // Invoke any custom behaviour that is wanted
+        AfterCombinationBehaviour.Invoke();
+    }
+
+    /// <summary>
     /// Initialise properties on Awake since this runs before Start
     /// </summary>
     private void Awake()
@@ -124,12 +170,12 @@ public class ObjectProperties : MonoBehaviour
                 }
                 else
                 {
-                    Debug.LogError( "Could not find the PropertiesHandler script on the " + PropertiesHandlerObject + ". Please add it to the object." );
+                    Debug.LogError( "Could not find the PropertiesHandler script on the '" + PropertiesHandlerObject + "'. Please add it to the object." );
                 }
             }
             else
             {
-                Debug.LogError( "Could not find " + PropertiesHandlerObject + " in scene. Please add it to the scene so that object properties may be initialised." );
+                Debug.LogError( "Could not find '" + PropertiesHandlerObject + "' prefab in scene. Please add it to the scene so that object properties may be initialised." );
             }
         }
     }
@@ -137,28 +183,7 @@ public class ObjectProperties : MonoBehaviour
     private void Start()
     {
         // TEMPORARY: Testing purposes
-        foreach ( var p in properties )
-        {
-            Debug.Log( p.Name + " - Random initialised value: " + p.ActualValue );
-        }
 
-        SetProperty( "Length", 99 );
-        Debug.Log( "Attempted to set Length property to 99. Length property value is now: " + GetProperty( "Length" ).ActualValue );
-
-        SetProperty( "Length", 101 );
-        Debug.Log( "Attempted to set Length property to 101 (above maximum). Length property value is now: " + GetProperty( "Length" ).ActualValue );
-
-        SetProperty( "Length", -1 );
-        Debug.Log( "Attempted to set Length property to -1 (below minimum). Length property value is now: " + GetProperty( "Length" ).ActualValue );
-
-        Debug.Log( "Testing GetProperties() function:" );
-        foreach ( var p in GetProperties() )
-        {
-            Debug.Log( p.Name + " - Value: " + p.ActualValue + " MinValue: " + p.MinValue + " MaxValue: " + p.MaxValue );
-        }
-
-        SetProperty( "propertyThatDoesntExist", 50 );
-        GetProperty( "propertyThatDoesntExist" );
     }
 
     private const string PropertiesHandlerObject = "PropertiesHandlerObject";
