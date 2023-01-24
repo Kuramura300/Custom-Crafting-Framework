@@ -10,4 +10,9 @@
     <MinValue>1</MinValue>
     <MaxValue>100</MaxValue>
   </Property>
+  <Property>
+    <Name>Weight</Name>
+    <MinValue>1</MinValue>
+    <MaxValue>1000</MaxValue>
+  </Property>
 </Properties>
