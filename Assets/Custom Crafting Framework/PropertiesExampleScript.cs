@@ -1,6 +1,6 @@
 using Assets.Properties;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -11,10 +11,6 @@ using UnityEngine.UI;
 /// </summary>
 public class PropertiesExampleScript : MonoBehaviour
 {
-    //
-    // Code related to the demonstration of combining the Stone with the Stick
-    //
-    
     /// <summary>
     /// The base object which is the Stick by default
     /// </summary>
@@ -36,6 +32,11 @@ public class PropertiesExampleScript : MonoBehaviour
     public Button CombineWithNameBtn;
 
     /// <summary>
+    /// The button used to add a property to an object
+    /// </summary>
+    public Button AddPropertyBtn;
+
+    /// <summary>
     /// Text to display the BaseObject's properties
     /// </summary>
     public TMP_Text BaseObjectText;
@@ -50,10 +51,30 @@ public class PropertiesExampleScript : MonoBehaviour
     /// </summary>
     public TMP_InputField NewNameInput;
 
+    /// <summary>
+    /// Input field where the user can define the property name to add to an object
+    /// </summary>
+    public TMP_InputField NewPropertyNameInput;
+
+    /// <summary>
+    /// Dropdown where the user can choose which object to add a new property to
+    /// </summary>
+    public TMP_Dropdown NewPropertyObjectDropdown;
+
+    private void Start()
+    {
+        UpdateDropdownOptions();
+    }
+
     private void Update()
     {
         UpdatePropertiesUIText();
     }
+
+
+    //
+    // Code related to the demonstration of combining the Stone with the Stick
+    //
 
     /// <summary>
     /// Combine objects
@@ -67,11 +88,13 @@ public class PropertiesExampleScript : MonoBehaviour
     /// <summary>
     /// Combine objects with a new object name
     /// </summary>
-    public void Combine(string newName)
+    public void Combine( string newName )
     {
         Combine();
 
         BaseObject.name = newName;
+
+        UpdateDropdownOptions();
     }
 
     /// <summary>
@@ -161,6 +184,59 @@ public class PropertiesExampleScript : MonoBehaviour
         {
             ObjectToCombineText.text = "";
         }
+    }
+
+
+    //
+    // Adding Properties demonstration
+    //
+
+    /// <summary>
+    /// Add a new property to object selected in dropdown on button press
+    /// </summary>
+    public void AddNewProperty()
+    {
+        GameObject selectedObject = GameObject.Find( NewPropertyObjectDropdown.options[NewPropertyObjectDropdown.value].text );
+
+        if (selectedObject != null)
+        {
+            // Get ObjectProperties of the selected object in the dropdown
+            ObjectProperties props = selectedObject.GetComponent<ObjectProperties>();
+
+            if ( props != null )
+            {
+                // Check the property is not already added
+                if ( props.GetProperties().Any( p => p.Name == NewPropertyNameInput.text ) == false )
+                {
+                    // Add property
+                    props.AddProperty( NewPropertyNameInput.text );
+                }
+                else
+                {
+                    Debug.LogError( "The property '" + NewPropertyNameInput.text + "' is already added to the object '" + selectedObject.name + "'." );
+                }
+            }
+            else
+            {
+                Debug.LogError( "Could not find the ObjectProperties component of object selected in the dropdown." );
+            }
+        }
+        else
+        {
+            Debug.LogError( "Could not find object selected in the dropdown." );
+        }
+    }
+
+    /// <summary>
+    /// Updates the options of the dropdown, for use when the object names change
+    /// </summary>
+    private void UpdateDropdownOptions()
+    {
+        // Add BaseObject and ObjectToCombine options to the NewPropertyObjectDropdown
+        List<string> dropdownOptions = new List<string> { BaseObject.name, ObjectToCombine.name };
+
+        NewPropertyObjectDropdown.ClearOptions();
+        NewPropertyObjectDropdown.AddOptions( dropdownOptions );
     }
 
 
