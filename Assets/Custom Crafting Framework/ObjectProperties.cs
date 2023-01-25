@@ -18,6 +18,18 @@ public class ObjectProperties : MonoBehaviour
     public List<string> Properties = new List<string>();
 
     /// <summary>
+    /// Behaviour which can be added to the inspector which will be invoked before another object's properties are combined into this one
+    /// </summary>
+    [Header( "Behaviour to be invoked before another object's\nproperties are combined into this one" )]
+    public UnityEvent BeforeCombinationBehaviour;
+
+    /// <summary>
+    /// Behaviour which can be added to the inspector which will be invoked after another object's properties are combined into this one
+    /// </summary>
+    [Header( "Behaviour to be invoked after another object's\nproperties are combined into this one" )]
+    public UnityEvent AfterCombinationBehaviour;
+
+    /// <summary>
     /// Get a list of the properties of this object
     /// </summary>
     /// <returns>List of properties of this objcet</returns>
@@ -72,7 +84,7 @@ public class ObjectProperties : MonoBehaviour
     }
 
     /// <summary>
-    /// Add property to this object with given property name
+    /// Add property to this object with given property name with a random value
     /// </summary>
     /// <param name="propertyName">Property name as defined in the xml document</param>
     public void AddProperty( string propertyName )
@@ -110,16 +122,45 @@ public class ObjectProperties : MonoBehaviour
     }
 
     /// <summary>
-    /// Behaviour which can be added to the inspector which will be invoked before another object's properties are combined into this one
+    /// Add property to this object with given property name and value
     /// </summary>
-    [Header( "Behaviour to be invoked before another object's\nproperties are combined into this one" )]
-    public UnityEvent BeforeCombinationBehaviour;
+    /// <param name="propertyName">Property name as defined in the xml document</param>
+    /// <param name="value">Value to set the property to</param>
+    public void AddProperty( string propertyName, int value )
+    {
+        if ( xmlDocument != null )
+        {
+            if ( xmlDocument.Descendants( "Name" ).Any( n => n.Value == propertyName ) )
+            {
+                Property newProperty = new Property();
 
-    /// <summary>
-    /// Behaviour which can be added to the inspector which will be invoked after another object's properties are combined into this one
-    /// </summary>
-    [Header("Behaviour to be invoked after another object's\nproperties are combined into this one")]
-    public UnityEvent AfterCombinationBehaviour;
+                // Set properties known from xml file
+                newProperty.Name = propertyName;
+                newProperty.MinValue = int.Parse( xmlDocument.Descendants( "Property" )
+                                        .Where( n => n.Element( "Name" ).Value == propertyName )
+                                        .Select( n => n.Element( "MinValue" ).Value ).FirstOrDefault() );
+                newProperty.MaxValue = int.Parse( xmlDocument.Descendants( "Property" )
+                                        .Where( n => n.Element( "Name" ).Value == propertyName )
+                                        .Select( n => n.Element( "MaxValue" ).Value ).FirstOrDefault() );
+
+                // Ensure that the new property value is within the min/max values
+                if ( value < newProperty.MinValue ) value = newProperty.MinValue;
+                if ( value > newProperty.MaxValue ) value = newProperty.MaxValue;
+
+                newProperty.ActualValue = value;
+
+                properties.Add( newProperty );
+            }
+            else
+            {
+                Debug.LogError( "Object '" + gameObject.name + "' could not find a property with name '" + propertyName + "' in xml file. It will ignore this property." );
+            }
+        }
+        else
+        {
+            Debug.LogError( "Could not find or parse the properties xml file." );
+        }
+    }
 
     /// <summary>
     /// Combine a list of properties into this object's list of properties
@@ -187,12 +228,6 @@ public class ObjectProperties : MonoBehaviour
                 Debug.LogError( "Could not find '" + PropertiesHandlerObject + "' prefab in scene. Please add it to the scene so that object properties may be initialised." );
             }
         }
-    }
-
-    private void Start()
-    {
-        // TEMPORARY: Testing purposes
-
     }
 
     private const string PropertiesHandlerObject = "PropertiesHandlerObject";

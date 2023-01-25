@@ -88,7 +88,7 @@ public class PropertiesExampleScript : MonoBehaviour
     /// <summary>
     /// Combine objects with a new object name
     /// </summary>
-    public void Combine(string newName)
+    public void Combine( string newName )
     {
         Combine();
 
