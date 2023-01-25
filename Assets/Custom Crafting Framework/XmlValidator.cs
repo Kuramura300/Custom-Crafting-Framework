@@ -17,7 +17,7 @@ namespace Assets.Properties
             schema = new XmlSchemaSet();
 
             // This is a hard-coded path as the validation will only take place within the editor
-            schema.Add( "", "Assets\\Properties\\Properties.xsd" );
+            schema.Add( "", "Assets\\Custom Crafting Framework\\Properties.xsd" );
         }
 
         /// <summary>
