@@ -61,6 +61,21 @@ public class PropertiesExampleScript : MonoBehaviour
     /// </summary>
     public TMP_Dropdown NewPropertyObjectDropdown;
 
+    /// <summary>
+    /// Dropdown where the user can choose which object to set a property of
+    /// </summary>
+    public TMP_Dropdown ObjectToSetPropertyOfDropdown;
+
+    /// <summary>
+    /// Dropdown where the user can choose which property of selected object to set
+    /// </summary>
+    public TMP_Dropdown PropertyToSetDropdown;
+
+    /// <summary>
+    /// Input field where the user can choose the new value to set for the selected property of selected object
+    /// </summary>
+    public TMP_InputField ValueToSetToPropertyInput;
+
     private void Start()
     {
         UpdateDropdownOptions();
@@ -233,10 +248,70 @@ public class PropertiesExampleScript : MonoBehaviour
     private void UpdateDropdownOptions()
     {
         // Add BaseObject and ObjectToCombine options to the NewPropertyObjectDropdown
-        List<string> dropdownOptions = new List<string> { BaseObject.name, ObjectToCombine.name };
+        List<string> dropdownOptions = new List<string> { BaseObject.name };
+
+        // If ObjectToCombine hasn't been combined, show it on the dropdown. We do this by checking if it still has an ObjectProperties component,
+        // since this implementation of the framework will remove it from the ObjectToCombine after combination
+        if (ObjectToCombine.GetComponent<ObjectProperties>() != null)
+        {
+            dropdownOptions.Add( ObjectToCombine.name );
+        }
 
         NewPropertyObjectDropdown.ClearOptions();
         NewPropertyObjectDropdown.AddOptions( dropdownOptions );
+
+        // Also add the options to ObjectToSetPropertyOfDropdown
+        ObjectToSetPropertyOfDropdown.ClearOptions();
+        ObjectToSetPropertyOfDropdown.AddOptions( dropdownOptions );
+
+        // Update PropertyToSetDropdown options
+        UpdatePropertyToSetDropdownOptions();
+    }
+
+
+    //
+    // Set properties demonstration
+    //
+
+    /// <summary>
+    /// Sets a new value from user input for selected property of selected object
+    /// </summary>
+    public void SetPropertyValueFromUI()
+    {
+        int value = 0;
+
+        // Check that the input field is a valid integer
+        if ( int.TryParse( ValueToSetToPropertyInput.text, out value ) == true )
+        {
+            // Get the ObjectProperties from the selected object from ObjectToSetPropertyOfDropdown
+            // and set the property selected from PropertyToSetDropdown to the new value
+            GameObject.Find( ObjectToSetPropertyOfDropdown.options[ObjectToSetPropertyOfDropdown.value].text ).GetComponent<ObjectProperties>()
+                .SetProperty( PropertyToSetDropdown.options[PropertyToSetDropdown.value].text, value );
+        }
+        else
+        {
+            Debug.LogError( "The input field for setting a property must be an integer." );
+        }
+    }
+
+    /// <summary>
+    /// Updates the options of the dropdown
+    /// </summary>
+    public void UpdatePropertyToSetDropdownOptions()
+    {
+        List<string> dropdownOptions = new List<string>();
+
+        // Get the properties list from the selected object from ObjectToSetPropertyOfDropdown
+        List<Property> props = GameObject.Find( ObjectToSetPropertyOfDropdown.options[ObjectToSetPropertyOfDropdown.value].text ).GetComponent<ObjectProperties>().GetProperties();
+
+        foreach ( Property p in props )
+        {
+            // Add property name to options
+            dropdownOptions.Add( p.Name );
+        }
+
+        PropertyToSetDropdown.ClearOptions();
+        PropertyToSetDropdown.AddOptions( dropdownOptions );
     }
 
 
