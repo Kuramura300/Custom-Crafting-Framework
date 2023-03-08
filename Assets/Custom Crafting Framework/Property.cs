@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Assets.Properties
+namespace CustomCraftingFramework
 {
     /// <summary>
     /// Class that holds the data of an individual property

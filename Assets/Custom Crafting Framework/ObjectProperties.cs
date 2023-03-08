@@ -1,4 +1,4 @@
-using Assets.Properties;
+using CustomCraftingFramework;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,6 +28,16 @@ public class ObjectProperties : MonoBehaviour
     /// </summary>
     [Header( "Behaviour to be invoked after another object's\nproperties are combined into this one" )]
     public UnityEvent AfterCombinationBehaviour;
+
+    /// <summary>
+    /// List of combination points for this object that other objects can be combined to
+    /// </summary>
+    public List<CombinationPoint> CombinationPoints;
+
+    /// <summary>
+    /// The currently selected combination point (defaults to first in list or null)
+    /// </summary>
+    public CombinationPoint SelectedCombinationPoint;
 
     /// <summary>
     /// Get a list of the properties of this object
@@ -200,6 +210,7 @@ public class ObjectProperties : MonoBehaviour
     /// </summary>
     private void Awake()
     {
+        // Initialise properties
         if (Properties.Count > 0)
         {
             var handler = GameObject.Find( PropertiesHandlerObject );
@@ -228,6 +239,11 @@ public class ObjectProperties : MonoBehaviour
                 Debug.LogError( "Could not find '" + PropertiesHandlerObject + "' prefab in scene. Please add it to the scene so that object properties may be initialised." );
             }
         }
+
+        // Find all combination points
+        CombinationPoints = GetComponentsInChildren<CombinationPoint>().ToList();
+
+        SelectedCombinationPoint = CombinationPoints.FirstOrDefault();
     }
 
     private const string PropertiesHandlerObject = "PropertiesHandlerObject";

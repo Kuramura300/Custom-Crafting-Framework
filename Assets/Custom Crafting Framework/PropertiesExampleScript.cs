@@ -1,4 +1,4 @@
-using Assets.Properties;
+using CustomCraftingFramework;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -136,6 +136,29 @@ public class PropertiesExampleScript : MonoBehaviour
     /// </summary>
     public void CustomAfterCombinationBehaviour()
     {
+        // Move object to combine to base object based on selected combination points
+        ObjectProperties baseObjectProperties = BaseObject.GetComponent<ObjectProperties>();
+        CombinationPoint baseObjectPoint = baseObjectProperties.SelectedCombinationPoint;
+        CombinationPoint objectToCombinePoint = ObjectToCombine.GetComponent<ObjectProperties>().SelectedCombinationPoint;
+
+        Vector3 selectedPointPositionOffset = ObjectToCombine.transform.position - objectToCombinePoint.transform.position;
+        ObjectToCombine.transform.position = baseObjectPoint.transform.position + selectedPointPositionOffset;
+
+        // Rotate the object to combine and adjust position so that both points stay overlapped
+        ObjectToCombine.transform.rotation = baseObjectPoint.transform.rotation;
+        ObjectToCombine.transform.position = baseObjectPoint.transform.rotation * ( ObjectToCombine.transform.position - baseObjectPoint.transform.position ) + baseObjectPoint.transform.position;
+
+        // Hide points and set as combined
+        baseObjectPoint.transform.Find( "PointHighlight" ).gameObject.SetActive( false );
+        objectToCombinePoint.transform.Find( "PointHighlight" ).gameObject.SetActive( false );
+
+        baseObjectPoint.HasCombined = true;
+        objectToCombinePoint.HasCombined = true;
+
+        // Update selected point of base object and turn green
+        baseObjectProperties.SelectedCombinationPoint = baseObjectProperties.CombinationPoints.FirstOrDefault( p => p.HasCombined == false );
+        baseObjectProperties.SelectedCombinationPoint.GetComponentInChildren<SpriteRenderer>().color = new Color( 0, 255, 0, 0.59f );
+
         // Remove ObjectProperties of the object
         Destroy( ObjectToCombine.GetComponent<ObjectProperties>() );
 

@@ -2,7 +2,7 @@ using System;
 using System.Xml.Linq;
 using System.Xml.Schema;
 
-namespace Assets.Properties
+namespace CustomCraftingFramework
 {
     /// <summary>
     /// Class which handles the validating of xml files

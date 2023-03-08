@@ -1,4 +1,4 @@
-using Assets.Properties;
+using CustomCraftingFramework;
 using System.Xml.Linq;
 using UnityEngine;
 
