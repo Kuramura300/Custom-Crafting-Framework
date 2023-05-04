@@ -97,7 +97,7 @@ public class PropertiesExampleScript : MonoBehaviour
     public void Combine()
     {
         BaseObject.GetComponent<ObjectProperties>() // get ObjectProperties component of BaseObject
-            .CombinePropertiesIn( ObjectToCombine.GetComponent<ObjectProperties>().GetProperties() ); // get properties of ObjectToCombine's ObjectProperties and combine them in
+            .CombinePropertiesIn( ObjectToCombine ); // combine ObjectToCombine in
     }
 
     /// <summary>

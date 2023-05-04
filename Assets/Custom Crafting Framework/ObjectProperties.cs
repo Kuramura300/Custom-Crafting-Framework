@@ -175,34 +175,52 @@ public class ObjectProperties : MonoBehaviour
     /// <summary>
     /// Combine a list of properties into this object's list of properties
     /// </summary>
-    /// <param name="newProperties">Properties to be combined in</param>
-    public void CombinePropertiesIn( List<Property> newProperties )
+    /// <param name="objectToCombine">Object with the properties to be combined in</param>
+    public void CombinePropertiesIn( GameObject objectToCombine )
     {
-        // Invoke any custom behaviour that is wanted
-        BeforeCombinationBehaviour.Invoke();
-
-        foreach ( Property p in newProperties )
+        if ( objectToCombine != null )
         {
-            // If property is not already in the properties list, add it
-            if ( properties.Any( prop => prop.Name == p.Name ) == false )
+            ObjectProperties objectToCombineProperties = objectToCombine.GetComponent<ObjectProperties>();
+
+            if ( objectToCombineProperties != null )
             {
-                properties.Add( p );
+                List<Property> newProperties = objectToCombine.GetComponent<ObjectProperties>().properties;
+
+                // Invoke any custom behaviour that is wanted
+                BeforeCombinationBehaviour.Invoke();
+
+                foreach ( Property p in newProperties )
+                {
+                    // If property is not already in the properties list, add it
+                    if ( properties.Any( prop => prop.Name == p.Name ) == false )
+                    {
+                        properties.Add( p );
+                    }
+                    // If it is already in the list, if the one currently in the list has a lower value, remove it and add the new one instead
+                    else
+                    {
+                        Property sameProp = properties.Where( prop => prop.Name == p.Name ).FirstOrDefault();
+
+                        if ( sameProp.ActualValue < p.ActualValue )
+                        {
+                            properties.Remove( sameProp );
+                            properties.Add( p );
+                        }
+                    }
+                }
+
+                // Invoke any custom behaviour that is wanted
+                AfterCombinationBehaviour.Invoke();
             }
-            // If it is already in the list, if the one currently in the list has a lower value, remove it and add the new one instead
             else
             {
-                Property sameProp = properties.Where( prop => prop.Name == p.Name ).FirstOrDefault();
-
-                if ( sameProp.ActualValue < p.ActualValue )
-                {
-                    properties.Remove( sameProp );
-                    properties.Add( p );
-                }
+                Debug.LogError( "Could not find an ObjectProperties component on the object to combine. Combination failed." );
             }
         }
-
-        // Invoke any custom behaviour that is wanted
-        AfterCombinationBehaviour.Invoke();
+        else
+        {
+            Debug.LogError( "The object to combine was null. Combination failed." );
+        }
     }
 
     /// <summary>
