@@ -9,6 +9,7 @@
               <xs:element name="Name" type="xs:string"  maxOccurs="1"/>
               <xs:element name="MinValue" type="xs:unsignedInt" maxOccurs="1"/>
               <xs:element name="MaxValue" type="xs:unsignedInt" maxOccurs="1"/>
+              <xs:element name="DefaultValue" type="xs:unsignedInt" minOccurs="0" maxOccurs="1"/>
             </xs:sequence>
           </xs:complexType>
         </xs:element>

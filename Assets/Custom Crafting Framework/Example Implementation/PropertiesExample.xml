@@ -14,5 +14,6 @@
     <Name>Weight</Name>
     <MinValue>1</MinValue>
     <MaxValue>1000</MaxValue>
+    <DefaultValue>500</DefaultValue>
   </Property>
 </Properties>

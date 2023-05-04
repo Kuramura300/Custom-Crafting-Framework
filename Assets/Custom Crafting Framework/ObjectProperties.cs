@@ -102,7 +102,7 @@ public class ObjectProperties : MonoBehaviour
     }
 
     /// <summary>
-    /// Add property to this object with given property name with a random value
+    /// Add property to this object with given property name with a random value or default value if defined in xml
     /// </summary>
     /// <param name="propertyName">Property name as defined in the xml document</param>
     public void AddProperty( string propertyName )
@@ -122,9 +122,21 @@ public class ObjectProperties : MonoBehaviour
                                         .Where( n => n.Element( "Name" ).Value == propertyName )
                                         .Select( n => n.Element( "MaxValue" ).Value ).FirstOrDefault() );
 
-                // Generate a random actual value for this property to have based on the min/max values
-                // We add 1 to the MaxValue since Random.Range(int, int) is exclusive on the max value
-                newProperty.ActualValue = Random.Range( newProperty.MinValue, newProperty.MaxValue + 1 );
+                XElement defaultValue = xmlDocument.Descendants( "Property" )
+                                        .Where( n => n.Element( "Name" ).Value == propertyName )
+                                        .Select( n => n.Element( "DefaultValue" ) ).FirstOrDefault();
+
+                if ( defaultValue == null )
+                {
+                    // Generate a random actual value for this property to have based on the min/max values
+                    // We add 1 to the MaxValue since Random.Range(int, int) is exclusive on the max value
+                    newProperty.ActualValue = Random.Range( newProperty.MinValue, newProperty.MaxValue + 1 );
+                }
+                else
+                {
+                    // Set value to the default value if one is defined
+                    newProperty.ActualValue = int.Parse( defaultValue.Value );
+                }
 
                 properties.Add( newProperty );
             }
