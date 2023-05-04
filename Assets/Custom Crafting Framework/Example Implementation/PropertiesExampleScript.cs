@@ -244,9 +244,9 @@ public class PropertiesExampleScript : MonoBehaviour
         // Add BaseObject and ObjectToCombine options to the NewPropertyObjectDropdown
         List<string> dropdownOptions = new List<string> { BaseObject.name };
 
-        // If ObjectToCombine hasn't been combined, show it on the dropdown. We do this by checking if it still has an ObjectProperties component,
+        // If ObjectToCombine hasn't been combined, show it on the dropdown. We do this by checking if the ObjectProperties component is still enabled,
         // since this implementation of the framework will remove it from the ObjectToCombine after combination
-        if (ObjectToCombine.GetComponent<ObjectProperties>() != null)
+        if ( ObjectToCombine.GetComponent<ObjectProperties>().isActiveAndEnabled == true )
         {
             dropdownOptions.Add( ObjectToCombine.name );
         }
