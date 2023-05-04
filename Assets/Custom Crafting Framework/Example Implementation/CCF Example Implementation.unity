@@ -2873,6 +2873,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  AddPropertiesOnCombine: 0
   UseCombinationPoints: 1
   SelectedCombinationPoint: {fileID: 0}
 --- !u!4 &725621446
@@ -6193,6 +6194,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  AddPropertiesOnCombine: 0
   UseCombinationPoints: 1
   SelectedCombinationPoint: {fileID: 0}
 --- !u!4 &1570638851

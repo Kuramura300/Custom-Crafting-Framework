@@ -29,6 +29,12 @@ public class ObjectProperties : MonoBehaviour
     [Header( "Behaviour to be invoked after another object's\nproperties are combined into this one" )]
     public UnityEvent AfterCombinationBehaviour;
 
+    [Tooltip( "When true, adds properties together (up to max value) on combination. When false, the highest number is taken instead" )]
+    /// <summary>
+    /// When true, adds properties together (up to max value) on combination. When false, the highest number is taken instead
+    /// </summary>
+    public bool AddPropertiesOnCombine = false;
+
     /// <summary>
     /// When true, enables the combination point functionality
     /// </summary>
@@ -198,15 +204,26 @@ public class ObjectProperties : MonoBehaviour
                     {
                         properties.Add( p );
                     }
-                    // If it is already in the list, if the one currently in the list has a lower value, remove it and add the new one instead
+                    // Behaviour if it is already in the list
                     else
                     {
-                        Property sameProp = properties.Where( prop => prop.Name == p.Name ).FirstOrDefault();
-
-                        if ( sameProp.ActualValue < p.ActualValue )
+                        // If the one currently in the list has a lower value, remove it and add the new one instead
+                        if ( AddPropertiesOnCombine == false )
                         {
-                            properties.Remove( sameProp );
-                            properties.Add( p );
+                            Property sameProp = properties.Where( prop => prop.Name == p.Name ).FirstOrDefault();
+
+                            if ( sameProp.ActualValue < p.ActualValue )
+                            {
+                                properties.Remove( sameProp );
+                                properties.Add( p );
+                            }
+                        }
+                        // Add values together and set it
+                        else
+                        {
+                            int newValue = properties.Where( prop => prop.Name == p.Name ).FirstOrDefault().ActualValue += p.ActualValue;
+
+                            SetProperty( p.Name, newValue );
                         }
                     }
                 }
