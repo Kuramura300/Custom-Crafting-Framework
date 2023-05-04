@@ -30,9 +30,11 @@ public class ObjectProperties : MonoBehaviour
     public UnityEvent AfterCombinationBehaviour;
 
     /// <summary>
-    /// List of combination points for this object that other objects can be combined to
+    /// When true, enables the combination point functionality
     /// </summary>
-    public List<CombinationPoint> CombinationPoints;
+    [Header( "Combination Point Functionality" )]
+    [Tooltip( "If true, when combining, move object to combine to this object based on selected combination points" )]
+    public bool UseCombinationPoints = true;
 
     /// <summary>
     /// The currently selected combination point (defaults to first in list or null)
@@ -209,6 +211,54 @@ public class ObjectProperties : MonoBehaviour
                     }
                 }
 
+                if ( UseCombinationPoints == true )
+                {
+                    if ( SelectedCombinationPoint != null )
+                    {
+                        // Move object to combine to this object based on selected combination points
+                        CombinationPoint objectToCombinePoint = objectToCombine.GetComponent<ObjectProperties>().SelectedCombinationPoint;
+
+                        if ( objectToCombinePoint != null )
+                        {
+                            Vector3 selectedPointPositionOffset = objectToCombine.transform.position - objectToCombinePoint.transform.position;
+                            objectToCombine.transform.position = SelectedCombinationPoint.transform.position + selectedPointPositionOffset;
+
+                            // Rotate the object to combine and adjust position so that both points stay overlapped
+                            objectToCombine.transform.rotation = SelectedCombinationPoint.transform.rotation;
+                            objectToCombine.transform.position = SelectedCombinationPoint.transform.rotation * ( objectToCombine.transform.position - SelectedCombinationPoint.transform.position ) + SelectedCombinationPoint.transform.position;
+
+                            // Hide points and set as combined
+                            SelectedCombinationPoint.transform.Find( "PointHighlight" ).gameObject.SetActive( false );
+                            objectToCombinePoint.transform.Find( "PointHighlight" ).gameObject.SetActive( false );
+
+                            SelectedCombinationPoint.HasCombined = true;
+                            objectToCombinePoint.HasCombined = true;
+
+                            // Update selected point of this object and turn green
+                            SelectedCombinationPoint = combinationPoints.FirstOrDefault( p => p.HasCombined == false );
+
+                            if ( SelectedCombinationPoint != null )
+                            {
+                                SelectedCombinationPoint.GetComponentInChildren<SpriteRenderer>().color = new Color( 0, 255, 0, 0.59f );
+                            }
+                        }
+                        else
+                        {
+                            Debug.LogError( "Object '" + objectToCombine.name + "' has no Selected Combination Point. Cannot move object to combine to this object based on selected combination point." );
+                        }
+                    }
+                    else
+                    {
+                        Debug.LogError( "Object '" + transform.name + "' has no Selected Combination Point. Cannot move object to combine to this object based on selected combination point." );
+                    }
+                }
+
+                // Remove ObjectProperties of the combined object
+                Destroy( objectToCombine.GetComponent<ObjectProperties>() );
+
+                // Make combined object a child of the this one
+                objectToCombine.transform.parent = transform;
+
                 // Invoke any custom behaviour that is wanted
                 AfterCombinationBehaviour.Invoke();
             }
@@ -220,6 +270,38 @@ public class ObjectProperties : MonoBehaviour
         else
         {
             Debug.LogError( "The object to combine was null. Combination failed." );
+        }
+    }
+
+    /// <summary>
+    /// Update the Selected Combination Point for this object to given point
+    /// </summary>
+    /// <param name="newSelectedPoint">The new selected combination point</param>
+    public void UpdateSelectedCombinationPoint( CombinationPoint newSelectedPoint )
+    {
+        // Check this combination point exists in list
+        if ( combinationPoints.Any( p => p == newSelectedPoint ) )
+        {
+            foreach ( CombinationPoint point in combinationPoints.Where( p => p.HasCombined == false ) )
+            {
+                // If this is the point, select it
+                if ( point == newSelectedPoint )
+                {
+                    // Turn this point green
+                    newSelectedPoint.GetComponentInChildren<SpriteRenderer>().color = new Color( 0, 255, 0, 0.59f );
+
+                    SelectedCombinationPoint = point;
+                }
+                else
+                {
+                    // Turn other points blue
+                    point.GetComponentInChildren<SpriteRenderer>().color = new Color( 0, 0, 255, 0.59f );
+                }
+            }
+        }
+        else
+        {
+            Debug.LogError( "Selected point is not present within the list of Combination Points for object '" + transform.name + "'" );
         }
     }
 
@@ -259,13 +341,14 @@ public class ObjectProperties : MonoBehaviour
         }
 
         // Find all combination points
-        CombinationPoints = GetComponentsInChildren<CombinationPoint>().ToList();
+        combinationPoints = GetComponentsInChildren<CombinationPoint>().ToList();
 
-        SelectedCombinationPoint = CombinationPoints.FirstOrDefault();
+        SelectedCombinationPoint = combinationPoints.FirstOrDefault();
     }
 
     private const string PropertiesHandlerObject = "PropertiesHandlerObject";
 
+    private List<CombinationPoint> combinationPoints;
     private List<Property> properties = new List<Property>();
     private XDocument xmlDocument;
 }
