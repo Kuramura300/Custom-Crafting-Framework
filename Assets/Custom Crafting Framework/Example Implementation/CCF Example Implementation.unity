@@ -7893,6 +7893,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PropertiesHandlerObject
       objectReference: {fileID: 0}
+    - target: {fileID: 1862919222316708831, guid: 886c06bb06b00b24db52b04c18ab060f, type: 3}
+      propertyPath: PropertiesXmlFile
+      value: 
+      objectReference: {fileID: 4900000, guid: 0fe1212dff52ad846814b2b02892d044, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 886c06bb06b00b24db52b04c18ab060f, type: 3}
 --- !u!1001 &3803550478819745513
