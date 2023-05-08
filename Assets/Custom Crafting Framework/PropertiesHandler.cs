@@ -1,43 +1,45 @@
-using CustomCraftingFramework;
 using System.Xml.Linq;
 using UnityEngine;
 
-/// <summary>
-/// Class that handles the reading and handling of Properties
-/// </summary>
-public class PropertiesHandler : MonoBehaviour
+namespace CustomCraftingFramework
 {
     /// <summary>
-    /// Xml file to be used for the Properties
+    /// Class that handles the reading and handling of Properties
     /// </summary>
-    public TextAsset PropertiesXmlFile = null;
-
-    void Awake()
+    public class PropertiesHandler : MonoBehaviour
     {
-        // Only validate while inside of editor
-        if ( ( PropertiesXmlFile != null ) && ( Application.isEditor == true ) )
+        /// <summary>
+        /// Xml file to be used for the Properties
+        /// </summary>
+        public TextAsset PropertiesXmlFile = null;
+
+        void Awake()
         {
-            XmlValidator xmlValidator = new XmlValidator();
+            // Only validate while inside of editor
+            if ( ( PropertiesXmlFile != null ) && ( Application.isEditor == true ) )
+            {
+                XmlValidator xmlValidator = new XmlValidator();
 
-            XDocument doc = XDocument.Parse( PropertiesXmlFile.text );
+                XDocument doc = XDocument.Parse( PropertiesXmlFile.text );
 
-            xmlValidator.Validate( doc );
-        }
-    }
-
-    /// <summary>
-    /// Returns the properties xml file as an XDocument
-    /// </summary>
-    /// <returns>The XDocument for the properties, otherwise null</returns>
-    public XDocument GetXmlFile()
-    {
-        XDocument doc = null;
-
-        if ( PropertiesXmlFile != null )
-        {
-            doc = XDocument.Parse( PropertiesXmlFile.text );
+                xmlValidator.Validate( doc );
+            }
         }
 
-        return doc;
+        /// <summary>
+        /// Returns the properties xml file as an XDocument
+        /// </summary>
+        /// <returns>The XDocument for the properties, otherwise null</returns>
+        public XDocument GetXmlFile()
+        {
+            XDocument doc = null;
+
+            if ( PropertiesXmlFile != null )
+            {
+                doc = XDocument.Parse( PropertiesXmlFile.text );
+            }
+
+            return doc;
+        }
     }
 }
