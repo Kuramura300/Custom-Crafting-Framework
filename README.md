@@ -1,4 +1,4 @@
-# Custom-Crafting-Framework
+# Custom Crafting Framework
  
 The Custom Crafting Framework is a package for the Unity game engine to assist game developers in creating a custom crafting system in their game. It will allow for objects to have any properties the developer wants which behaviour can be made from, and which can affect an object differently when combined.
 
