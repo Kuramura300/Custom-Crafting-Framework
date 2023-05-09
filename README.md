@@ -7,3 +7,11 @@ Within the package, an example implementation is included where you have a stick
 The framework is generic so that it is able to support a wide range of implementations, not limited to item crafting (it could be used for spell crafting or creating robots from different parts for example).
 
 See the [wiki](https://github.com/Kuramura300/Custom-Crafting-Framework/wiki) for more details on how the framework works and how it can be used.
+
+## Unity version
+
+This framework was created using Unity Editor 2021.3.11f1 (LTS).
+
+## Setting up the Unity package
+
+Details on how to set up the package in a Unity project are available [here](https://github.com/Kuramura300/Custom-Crafting-Framework/wiki/Usage#unity-setup).
